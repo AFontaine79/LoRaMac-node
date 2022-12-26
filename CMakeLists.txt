@@ -18,4 +18,6 @@
 project(loramac-node)
 cmake_minimum_required(VERSION 3.6)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
