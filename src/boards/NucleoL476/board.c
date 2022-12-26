@@ -33,6 +33,9 @@
 #include "lpm-board.h"
 #include "rtc-board.h"
 
+#define TRACE_MODULE        2
+#include "execution_tracer.h"
+
 #if defined( SX1261MBXBAS ) || defined( SX1262MBXCAS ) || defined( SX1262MBXDAS )
     #include "sx126x-board.h"
 #elif defined( LR1110MB1XXS )
@@ -126,6 +129,8 @@ void BoardInitMcu( void )
 {
     if( McuInitialized == false )
     {
+        TRACE_ProcessorReset((RCC->CSR >> 24) & 0xFFFF);
+
         HAL_Init( );
 
         InitFlashMemoryOperations( );

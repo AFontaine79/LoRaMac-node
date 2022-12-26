@@ -16,7 +16,9 @@
 /* Standard Arm Cortex FLASH base */
 // #define FLASH_BASE		(0x00000000)
 /* Standard STM32 FLASH base */
+#ifndef FLASH_BASE
 #define FLASH_BASE (0x08000000)
+#endif
 
 /**
  * Variable and SFR addresses are also stored as offsets.

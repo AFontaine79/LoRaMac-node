@@ -20,12 +20,16 @@
  *
  * \author    Gregory Cristian ( Semtech )
  */
+#include <stdio.h>
 #include <string.h>
 #include "board.h"
 #include "gpio.h"
 #include "delay.h"
 #include "timer.h"
 #include "radio.h"
+
+#define TRACE_MODULE        1
+#include "execution_tracer.h"
 
 #if defined( REGION_AS923 )
 
@@ -169,6 +173,10 @@ int main( void )
 {
     bool isMaster = true;
     uint8_t i;
+    uint32_t traceValue;
+
+    TRACE_Clear();
+    TRACE_ExecTracerVersion();
 
     // Target board initialization
     BoardInitMcu( );
@@ -329,6 +337,11 @@ int main( void )
             break;
         }
 
+        while((traceValue = TRACE_Get()) != 0)
+        {
+            printf("0x%08X\n", (unsigned int)traceValue);
+        }
+
         BoardLowPowerHandler( );
         // Process Radio IRQ
         if( Radio.IrqProcess != NULL )
@@ -340,34 +353,44 @@ int main( void )
 
 void OnTxDone( void )
 {
+    TRACE_FunctionEntry(OnTxDone);
     Radio.Sleep( );
     State = TX;
+    TRACE_FunctionExit(OnTxDone);
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
+    TRACE_FunctionEntry(OnRxDone);
     Radio.Sleep( );
     BufferSize = size;
     memcpy( Buffer, payload, BufferSize );
     RssiValue = rssi;
     SnrValue = snr;
     State = RX;
+    TRACE_FunctionExit(OnRxDone);
 }
 
 void OnTxTimeout( void )
 {
+    TRACE_FunctionEntry(OnTxTimeout);
     Radio.Sleep( );
     State = TX_TIMEOUT;
+    TRACE_FunctionExit(OnTxTimeout);
 }
 
 void OnRxTimeout( void )
 {
+    TRACE_FunctionEntry(OnRxTimeout);
     Radio.Sleep( );
     State = RX_TIMEOUT;
+    TRACE_FunctionExit(OnRxTimeout);
 }
 
 void OnRxError( void )
 {
+    TRACE_FunctionEntry(OnRxError);
     Radio.Sleep( );
     State = RX_ERROR;
+    TRACE_FunctionExit(OnRxError);
 }
