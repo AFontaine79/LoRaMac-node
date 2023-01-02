@@ -70,7 +70,7 @@ def main():
     parser.add_argument('--model', help='Device name (e.g. ATSAMA5D33 or STM32L4x6)', type=str, required=False)
     args = parser.parse_args()
 
-    svd_file = args.file
+    svd_file = args.svd_file
     make = args.make
     model = args.model
 
