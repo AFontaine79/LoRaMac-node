@@ -356,6 +356,7 @@ void OnTxDone( void )
     TRACE_FunctionEntry(OnTxDone);
     Radio.Sleep( );
     State = TX;
+    TRACE_Line();
     TRACE_FunctionExit(OnTxDone);
 }
 
@@ -379,11 +380,14 @@ void OnTxTimeout( void )
     TRACE_FunctionExit(OnTxTimeout);
 }
 
+uint32_t timeout_count = 0;
 void OnRxTimeout( void )
 {
     TRACE_FunctionEntry(OnRxTimeout);
     Radio.Sleep( );
     State = RX_TIMEOUT;
+    timeout_count++;
+    TRACE_VariableValue(timeout_count);
     TRACE_FunctionExit(OnRxTimeout);
 }
 
