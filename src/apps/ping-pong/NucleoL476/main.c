@@ -167,10 +167,15 @@ void OnRxTimeout( void );
  */
 void OnRxError( void );
 
-/*!
- * \brief Forward all entries in trace buffer to back end
- */
-void DumpTraceBuffer( void );
+void WriteToBackend(uint8_t * p_data, uint16_t size)
+{
+    printf("%.*s", size, (char*)p_data);
+}
+static ExecTraceCallbacks_t exec_trace_callbacks = {
+        .write = WriteToBackend,
+        .lock = NULL,
+        .unlock = NULL
+};
 
 /**
  * Main application entry point.
@@ -180,13 +185,13 @@ int main( void )
     bool isMaster = true;
     uint8_t i;
 
-    TRACE_Init();
+    TRACE_Init(&exec_trace_callbacks);
 
     // Target board initialization
     BoardInitMcu( );
     BoardInitPeriph( );
 
-    DumpTraceBuffer();
+    DumpExecTraceLog();
 
     // Radio initialization
     RadioEvents.TxDone = OnTxDone;
@@ -343,7 +348,7 @@ int main( void )
             break;
         }
 
-        DumpTraceBuffer();
+        DumpExecTraceLog();
 
         BoardLowPowerHandler( );
         // Process Radio IRQ
@@ -391,8 +396,8 @@ void OnRxTimeout( void )
     TRACE_FunctionEntry(OnRxTimeout);
     Radio.Sleep( );
     State = RX_TIMEOUT;
-    timeout_count++;
     TRACE_VariableValue(timeout_count);
+    timeout_count++;
     if (timeout_count == 10)
     {
         NVIC_SystemReset();
@@ -406,14 +411,4 @@ void OnRxError( void )
     Radio.Sleep( );
     State = RX_ERROR;
     TRACE_FunctionExit(OnRxError);
-}
-
-void DumpTraceBuffer( void )
-{
-    uint32_t traceValue;
-    while(!TRACE_IsEmpty())
-    {
-        traceValue = TRACE_Get();
-        printf("0x%08X\n", (unsigned int)traceValue);
-    }
 }
