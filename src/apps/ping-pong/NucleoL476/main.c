@@ -27,6 +27,7 @@
 #include "delay.h"
 #include "timer.h"
 #include "radio.h"
+#include "stm32l476xx.h"
 
 #define TRACE_MODULE        1
 #include "execution_tracer.h"
@@ -166,6 +167,11 @@ void OnRxTimeout( void );
  */
 void OnRxError( void );
 
+/*!
+ * \brief Forward all entries in trace buffer to back end
+ */
+void DumpTraceBuffer( void );
+
 /**
  * Main application entry point.
  */
@@ -173,14 +179,14 @@ int main( void )
 {
     bool isMaster = true;
     uint8_t i;
-    uint32_t traceValue;
 
-    TRACE_Clear();
-    TRACE_ExecTracerVersion();
+    TRACE_Init();
 
     // Target board initialization
     BoardInitMcu( );
     BoardInitPeriph( );
+
+    DumpTraceBuffer();
 
     // Radio initialization
     RadioEvents.TxDone = OnTxDone;
@@ -337,10 +343,7 @@ int main( void )
             break;
         }
 
-        while((traceValue = TRACE_Get()) != 0)
-        {
-            printf("0x%08X\n", (unsigned int)traceValue);
-        }
+        DumpTraceBuffer();
 
         BoardLowPowerHandler( );
         // Process Radio IRQ
@@ -381,6 +384,8 @@ void OnTxTimeout( void )
 }
 
 uint32_t timeout_count = 0;
+//typedef void (*func_ptr)(void);
+//static func_ptr crash_now = NULL;
 void OnRxTimeout( void )
 {
     TRACE_FunctionEntry(OnRxTimeout);
@@ -388,6 +393,10 @@ void OnRxTimeout( void )
     State = RX_TIMEOUT;
     timeout_count++;
     TRACE_VariableValue(timeout_count);
+    if (timeout_count == 10)
+    {
+        NVIC_SystemReset();
+    }
     TRACE_FunctionExit(OnRxTimeout);
 }
 
@@ -397,4 +406,14 @@ void OnRxError( void )
     Radio.Sleep( );
     State = RX_ERROR;
     TRACE_FunctionExit(OnRxError);
+}
+
+void DumpTraceBuffer( void )
+{
+    uint32_t traceValue;
+    while(!TRACE_IsEmpty())
+    {
+        traceValue = TRACE_Get();
+        printf("0x%08X\n", (unsigned int)traceValue);
+    }
 }

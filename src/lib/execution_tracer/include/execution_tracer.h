@@ -18,6 +18,8 @@
 #define BUFFER_INDEX_MASK       (BUFFER_LENGTH_IN_WORDS - 1)
 #define BUFFER_MAX_CAPACITY     (BUFFER_LENGTH_IN_WORDS - 1)
 
+#define EXEC_TRACE_INIT_MAGIC   (0xA5B4C123)
+
 /**
  * Convenience functions for checking buffer status.
  * Note: It is not necessary to call TRACE_IsEmpty() in your idle handler.
@@ -144,7 +146,7 @@
 #define TRACE_VariableValue(var)    TRACE_Put(                                  \
     ((TRACE_IDCODE_VARIABLE_VALUE << TRACE_IDCODE_Pos) & TRACE_IDCODE_Msk) |    \
     ((((uintptr_t)(&var) - RAM_BASE) << TRACE_DATA_Pos) & TRACE_DATA_Msk));     \
-    TRACE_Put(var)
+    TRACE_Put((uint32_t)var)
 
 /**
  * @brief       Trace a memory mapped peripheral register value
@@ -168,6 +170,17 @@ typedef struct {
 } ExecTracer_t;
 
 
-extern ExecTracer_t m_exec_trace;
+extern volatile ExecTracer_t m_exec_trace;
+
+
+/**
+ * @brief       Initializes the trace buffer correctly for both power on and reset.
+ * Note:        In the case noinit RAM is used, the buffer is preserved through
+ *              reset.
+ *              To capture traces after a crash scenario, all trace entries should
+ *              be dumped to the back end after calling this function and before
+ *              starting normal operation.
+ */
+void TRACE_Init(void);
 
 #endif /* LIB_INCLUDE_EXECUTION_TRACER_H_ */
