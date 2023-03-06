@@ -38,6 +38,6 @@
 
 #define ALLOW_OVERWRITE                 1
 
-#define BUFFER_LENGTH_IN_WORDS          1024
+#define BUFFER_LENGTH_IN_WORDS          128
 
 #endif /* LIB_INCLUDE_EXECUTION_TRACER_CONF_H_ */
