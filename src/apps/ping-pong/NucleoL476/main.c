@@ -20,12 +20,17 @@
  *
  * \author    Gregory Cristian ( Semtech )
  */
+#include <stdio.h>
 #include <string.h>
 #include "board.h"
 #include "gpio.h"
 #include "delay.h"
 #include "timer.h"
 #include "radio.h"
+#include "stm32l476xx.h"
+
+#define TRACE_MODULE        1
+#include "execution_tracer.h"
 
 #if defined( REGION_AS923 )
 
@@ -162,6 +167,16 @@ void OnRxTimeout( void );
  */
 void OnRxError( void );
 
+void WriteToBackend(uint8_t * p_data, uint16_t size)
+{
+    printf("%.*s", size, (char*)p_data);
+}
+static ExecTraceCallbacks_t exec_trace_callbacks = {
+        .write = WriteToBackend,
+        .lock = NULL,
+        .unlock = NULL
+};
+
 /**
  * Main application entry point.
  */
@@ -170,9 +185,13 @@ int main( void )
     bool isMaster = true;
     uint8_t i;
 
+    TRACE_Init(&exec_trace_callbacks);
+
     // Target board initialization
     BoardInitMcu( );
     BoardInitPeriph( );
+
+    DumpExecTraceLog();
 
     // Radio initialization
     RadioEvents.TxDone = OnTxDone;
@@ -329,6 +348,8 @@ int main( void )
             break;
         }
 
+        DumpExecTraceLog();
+
         BoardLowPowerHandler( );
         // Process Radio IRQ
         if( Radio.IrqProcess != NULL )
@@ -340,34 +361,54 @@ int main( void )
 
 void OnTxDone( void )
 {
+    TRACE_FunctionEntry(OnTxDone);
     Radio.Sleep( );
     State = TX;
+    TRACE_Line();
+    TRACE_FunctionExit(OnTxDone);
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
+    TRACE_FunctionEntry(OnRxDone);
     Radio.Sleep( );
     BufferSize = size;
     memcpy( Buffer, payload, BufferSize );
     RssiValue = rssi;
     SnrValue = snr;
     State = RX;
+    TRACE_FunctionExit(OnRxDone);
 }
 
 void OnTxTimeout( void )
 {
+    TRACE_FunctionEntry(OnTxTimeout);
     Radio.Sleep( );
     State = TX_TIMEOUT;
+    TRACE_FunctionExit(OnTxTimeout);
 }
 
+uint32_t timeout_count = 0;
+//typedef void (*func_ptr)(void);
+//static func_ptr crash_now = NULL;
 void OnRxTimeout( void )
 {
+    TRACE_FunctionEntry(OnRxTimeout);
     Radio.Sleep( );
     State = RX_TIMEOUT;
+    TRACE_VariableValue(timeout_count);
+    timeout_count++;
+    if (timeout_count == 10)
+    {
+        NVIC_SystemReset();
+    }
+    TRACE_FunctionExit(OnRxTimeout);
 }
 
 void OnRxError( void )
 {
+    TRACE_FunctionEntry(OnRxError);
     Radio.Sleep( );
     State = RX_ERROR;
+    TRACE_FunctionExit(OnRxError);
 }

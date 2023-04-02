@@ -30,6 +30,9 @@
 #include "gpio-ioe.h"
 #endif
 
+#define TRACE_MODULE        3
+#include "execution_tracer.h"
+
 static Gpio_t *GpioIrq[16];
 
 void GpioMcuInit( Gpio_t *obj, PinNames pin, PinModes mode, PinConfigs config, PinTypes type, uint32_t value )
@@ -334,46 +337,67 @@ uint32_t GpioMcuRead( Gpio_t *obj )
 
 void EXTI0_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI0_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_0 );
+    TRACE_FunctionExit(EXTI0_IRQHandler);
 }
 
 void EXTI1_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI1_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_1 );
+    TRACE_FunctionExit(EXTI1_IRQHandler);
 }
 
 void EXTI2_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI2_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_2 );
+    TRACE_FunctionExit(EXTI2_IRQHandler);
 }
 
 void EXTI3_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI3_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_3 );
+    TRACE_FunctionExit(EXTI3_IRQHandler);
 }
 
 void EXTI4_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI4_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_4 );
+    TRACE_FunctionExit(EXTI4_IRQHandler);
 }
 
 void EXTI9_5_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI9_5_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_5 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_6 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_7 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_8 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_9 );
+    TRACE_FunctionExit(EXTI9_5_IRQHandler);
 }
 
 void EXTI15_10_IRQHandler( void )
 {
+    TRACE_FunctionEntry(EXTI15_10_IRQHandler);
+    TRACE_SFRValue(EXTI->PR1);
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_10 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_11 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_12 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_13 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_14 );
     HAL_GPIO_EXTI_IRQHandler( GPIO_PIN_15 );
+    TRACE_FunctionExit(EXTI15_10_IRQHandler);
 }
 
 void HAL_GPIO_EXTI_Callback( uint16_t gpioPin )
