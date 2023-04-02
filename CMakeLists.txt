@@ -18,4 +18,17 @@
 project(loramac-node)
 cmake_minimum_required(VERSION 3.6)
 
+include(FetchContent)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
+
+FetchContent_Declare(
+    execution-tracer
+    GIT_REPOSITORY https://github.com/AFontaine79/Execution-Tracer.git
+    GIT_TAG        f946f5aad144736efc21d5e8d0a77d7639b1ce8d
+)
+set(EXEC_TRACE_CONF_FILE ${CMAKE_SOURCE_DIR}/src/lib/config/execution_tracer_conf.h)
+set(EXEC_TRACE_LIBRARY_TYPE OBJECT)
+FetchContent_MakeAvailable(execution-tracer)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)

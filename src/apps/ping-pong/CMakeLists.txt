@@ -52,6 +52,7 @@ add_executable(${PROJECT_NAME}
                             $<TARGET_OBJECTS:radio>
                             $<TARGET_OBJECTS:peripherals>
                             $<TARGET_OBJECTS:${BOARD}>
+                            $<TARGET_OBJECTS:execution-tracer>
 )
 
 # Loops through all regions and add compile time definitions for the enabled ones.
@@ -79,6 +80,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:$<TARGET_PROPERTY:radio,INTERFACE_INCLUDE_DIRECTORIES>>
     $<BUILD_INTERFACE:$<TARGET_PROPERTY:peripherals,INTERFACE_INCLUDE_DIRECTORIES>>
     $<BUILD_INTERFACE:$<TARGET_PROPERTY:${BOARD},INTERFACE_INCLUDE_DIRECTORIES>>
+    $<BUILD_INTERFACE:$<TARGET_PROPERTY:execution-tracer,INTERFACE_INCLUDE_DIRECTORIES>>
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
