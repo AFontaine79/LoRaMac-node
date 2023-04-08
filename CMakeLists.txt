@@ -25,9 +25,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 FetchContent_Declare(
     execution-tracer
     GIT_REPOSITORY https://github.com/AFontaine79/Execution-Tracer.git
-    GIT_TAG        f946f5aad144736efc21d5e8d0a77d7639b1ce8d
+    GIT_TAG        bdafefb0a28393d6afa46b70e95cc1e353e39d01
 )
-set(EXEC_TRACE_CONF_FILE ${CMAKE_SOURCE_DIR}/src/lib/config/execution_tracer_conf.h)
+#set(EXEC_TRACE_CONF_FILE ${CMAKE_SOURCE_DIR}/src/lib/config/execution_tracer_conf.h)
 set(EXEC_TRACE_LIBRARY_TYPE OBJECT)
 FetchContent_MakeAvailable(execution-tracer)
 
