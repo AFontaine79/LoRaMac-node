@@ -27,7 +27,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/AFontaine79/Execution-Tracer.git
     GIT_TAG        b35c69a1bf386d9df2e181ead28be6377c366422
 )
-#set(EXEC_TRACE_CONF_FILE ${CMAKE_SOURCE_DIR}/src/lib/config/execution_tracer_conf.h)
 set(EXEC_TRACE_LIBRARY_TYPE OBJECT)
 FetchContent_MakeAvailable(execution-tracer)
 
